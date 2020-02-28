@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "idiom" : "universal",
+      "filename" : "NOK.png"
+    }
+  ],
+  "info" : {
+    "version" : 1,
+    "author" : "xcode"
+  }
+}
