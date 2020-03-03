@@ -94,14 +94,17 @@ private extension PairListViewModelClass {
             var updatedRates = [PairModel]()
 
             self.pairs.forEach { (pair) in
-
-                let item = PairModel(pair: pair,
-                                     sourceCurrencyUnit: "1 \(pair.source.countryCode)",
-                    sourceCurrencyName: "\(pair.source.countryCode)",
+                let targetCurrencyName: String
+                if pair.target.currencyName == pair.target.countryCode {
+                    targetCurrencyName = pair.target.countryCode
+                } else {
+                    targetCurrencyName = "\(pair.target.currencyName) · \(pair.target.countryCode)"
+                }
+                let item = PairModel(pair: pair, sourceCurrencyUnit: "1 \(pair.source.countryCode)",
+                    sourceCurrencyName: "\(pair.source.currencyName)",
                     rate: result[pair],
-                    targetCurrencyName: "\(pair.target.currencyName) · \(pair.target.countryCode)")
+                    targetCurrencyName: targetCurrencyName)
                 updatedRates.append(item)
-
             }
 
             self.items = updatedRates

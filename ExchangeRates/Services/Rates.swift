@@ -8,13 +8,19 @@ protocol Rates {
 
 final class RatesService: Rates {
 
+    static private let baseURL = "https://europe-west1-revolut-230009.cloudfunctions.net/revolut-ios"
     private lazy var urlSession: URLSession = {
         let internalURLSession = URLSession(configuration: .default)
         return internalURLSession
     }()
 
     func rates(for pairs: [Pair], completion: @escaping (_ error: Error?, _ rates: [Pair: Float]) -> Void) {
-        var url = URL(string: "https://europe-west1-revolut-230009.cloudfunctions.net/revolut-ios")!
+        guard var url = URL(string: RatesService.baseURL) else {
+            DispatchQueue.main.async {
+                completion(nil, [Pair: Float]())
+            }
+            return
+        }
         var urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false)
         urlComponents?.queryItems = pairs.map {
             URLQueryItem(name: "pairs", value: "\($0.source.countryCode)\($0.target.countryCode)")
@@ -56,7 +62,6 @@ final class RatesService: Rates {
                 completion(error, result)
             }
         }
-
         task.resume()
     }
 }

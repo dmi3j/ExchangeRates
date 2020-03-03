@@ -166,7 +166,7 @@ class AddPairViewModelTests: XCTestCase {
             XCTAssertEqual(coordinatorDelegate.selectedCurrency, Currency(countryCode: "GBP"), "GBP should be selected")
         }
 
-        waitForExpectations(timeout: 1.0) { (error) in
+        waitForExpectations(timeout: 3.0) { (error) in
             if let error = error { XCTFail("Failed on timeout with error \(error)") }
         }
     }

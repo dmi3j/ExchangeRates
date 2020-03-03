@@ -4,6 +4,8 @@ import UIKit
 
 class AddCurrencyHeaderView: UIView {
 
+    public static let height: CGFloat = 60.0
+
     @IBOutlet private weak var plusButton: UIButton!
 
     override func awakeFromNib() {

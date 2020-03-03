@@ -17,6 +17,7 @@ class PairListViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        title = "Exchange Rates"
         addPairButton.layer.cornerRadius = addPairButton.frame.size.width / 2
         viewModel?.viewDidLoad()
     }
@@ -61,11 +62,10 @@ extension PairListViewController: UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         guard let viewModel = viewModel, viewModel.itemsCount > 0 else { return CGFloat.zero }
-        return 60.0
+        return AddCurrencyHeaderView.height
     }
 
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-
         let nib = UINib(nibName: "AddCurrencyHeaderView", bundle: nil)
         let objects = nib.instantiate(withOwner: nil, options: nil)
         guard let headerView = objects.first as? AddCurrencyHeaderView else { return nil }
@@ -92,6 +92,7 @@ extension PairListViewController: PairListViewDelegate {
             guard let self = self else { return }
 
             self.emptyView.isHidden = (self.viewModel?.itemsCount ?? 0) > 0
+            self.navigationController?.navigationBar.isHidden = !self.emptyView.isHidden
             self.tableView.reloadData()
         }
     }

@@ -58,7 +58,7 @@ private extension PairViewCell {
                 self.rateValueB.text = String(String(format: "%.4f", value).suffix(2))
             } else {
                 self.rateValue.text = "-.--"
-                self.rateValueB.text = "--"
+                self.rateValueB.text = ""
             }
         }
     }

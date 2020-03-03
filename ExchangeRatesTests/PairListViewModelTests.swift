@@ -11,6 +11,7 @@ class PairListViewModelTests: XCTestCase {
         XCTAssertNil(viewModel.item(at: 3), "There should not be 4th item")
         XCTAssertEqual(viewModel.item(at: 0)?.pair.source.countryCode, "GBP", "Source currency should be GBP")
         XCTAssertEqual(viewModel.item(at: 0)?.pair.target.countryCode, "USD", "Target currency should be USD")
+        XCTAssertEqual(viewModel.item(at: 0)?.sourceCurrencyUnit, "1 GBP", "Source currency should be GBP")
     }
 
     func testRemove() {
@@ -27,12 +28,23 @@ class PairListViewModelTests: XCTestCase {
         let viewModel = PairListViewModelClass(storage: TestStorage(), rates: TestRates())
         viewModel.viewDidLoad()
         let existingPair = Pair(source: Currency(countryCode: "GBP"), target: Currency(countryCode: "USD"))
-        let neewPair = Pair(source: Currency(countryCode: "EUR"), target: Currency(countryCode: "GBP"))
+        let newPair = Pair(source: Currency(countryCode: "EUR"), target: Currency(countryCode: "GBP"))
         XCTAssertEqual(viewModel.itemsCount, 3, "View model should return 3 items")
         viewModel.add(existingPair)
         XCTAssertEqual(viewModel.itemsCount, 3, "View model should return 3 items")
-        viewModel.add(neewPair)
+        viewModel.add(newPair)
         XCTAssertEqual(viewModel.itemsCount, 4, "View model should return 4 items")
+    }
+
+    func testFormating() {
+        let viewModel = PairListViewModelClass(storage: TestStorage(), rates: TestRates())
+        viewModel.viewDidLoad()
+        let pairWithBrokenSource = Pair(source: Currency(countryCode: "XXX"), target: Currency(countryCode: "GBP"))
+        viewModel.add(pairWithBrokenSource)
+        XCTAssertEqual(viewModel.item(at: 3)?.sourceCurrencyName, "XXX", "No currency name, just code")
+        let pairWithBrokenTarget = Pair(source: Currency(countryCode: "GBP"), target: Currency(countryCode: "XXX"))
+        viewModel.add(pairWithBrokenTarget)
+        XCTAssertEqual(viewModel.item(at: 4)?.targetCurrencyName, "XXX", "No currency name, just code")
     }
 
     func testCallCoordinatorDelegateAddPair() {
@@ -45,17 +57,17 @@ class PairListViewModelTests: XCTestCase {
             exp.fulfill()
             XCTAssertTrue(coordinatorDelegate.didCall, "Should call")
         }
-        waitForExpectations(timeout: 1.0) { (error) in
+        waitForExpectations(timeout: 3.0) { (error) in
             if let error = error { XCTFail("Failed on timeout with error \(error)") }
         }
     }
 
     func testNotifyObservers() {
         let viewModel = PairListViewModelClass(storage: TestStorage(), rates: TestRates())
-        let neewPair = Pair(source: Currency(countryCode: "EUR"), target: Currency(countryCode: "GBP"))
+        let newPair = Pair(source: Currency(countryCode: "EUR"), target: Currency(countryCode: "GBP"))
         let observer = TestRateObserver()
         viewModel.addObserver(observer)
-        viewModel.add(neewPair)
+        viewModel.add(newPair)
         let exp = expectation(description: "Did call")
         DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(3)) {
             exp.fulfill()
@@ -68,11 +80,11 @@ class PairListViewModelTests: XCTestCase {
 
     func testNotNotifyRemovedObservers() {
         let viewModel = PairListViewModelClass(storage: TestStorage(), rates: TestRates())
-        let neewPair = Pair(source: Currency(countryCode: "EUR"), target: Currency(countryCode: "GBP"))
+        let newPair = Pair(source: Currency(countryCode: "EUR"), target: Currency(countryCode: "GBP"))
         let observer = TestRateObserver()
         viewModel.addObserver(observer)
         viewModel.removeObserver(observer)
-        viewModel.add(neewPair)
+        viewModel.add(newPair)
         let exp = expectation(description: "Did call")
         DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(3)) {
             exp.fulfill()
